@@ -1,0 +1,18 @@
+# OpenMC outputs
+statepoint.*.h5
+summary.h5
+tallies.out
+source.*.h5
+particle_*.h5
+track_*.h5
+volume_*.h5
+
+# Python / environment
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.env
+
+# Cross-section data (large, download separately)
+*.xml.bak

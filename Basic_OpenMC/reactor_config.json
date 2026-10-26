@@ -1,0 +1,192 @@
+{
+  "_notes": [
+    "Input file for reactor_model.py. Keys starting with an underscore are ignored.",
+    "Units: lengths in cm, densities in g/cm3, temperatures in K.",
+    "Materials are only built if something in 'geometry' references them by key.",
+    "This is a starting point, not an optimized design: tune n_rings, pitch, and active_length first."
+  ],
+
+  "materials": {
+    "fuel_UN": {
+      "name": "HALEU UN",
+      "density_g_cm3": 14.32,
+      "fraction_of_theoretical": 0.95,
+      "components": [
+        {"element": "U", "percent": 1.0, "percent_type": "ao", "enrichment": 19.75},
+        {"nuclide": "N15", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "_notes": "enrichment on U is wt% U-235. N-15 enriched to avoid N-14 absorption.",
+      "plot_color": "crimson"
+    },
+    "fuel_UO2": {
+      "name": "HALEU UO2",
+      "density_g_cm3": 10.96,
+      "fraction_of_theoretical": 0.95,
+      "components": [
+        {"element": "U", "percent": 1.0, "percent_type": "ao", "enrichment": 19.75},
+        {"element": "O", "percent": 2.0, "percent_type": "ao"}
+      ],
+      "plot_color": "orangered"
+    },
+    "clad_NbZr": {
+      "name": "Nb-1Zr",
+      "density_g_cm3": 8.57,
+      "components": [
+        {"element": "Nb", "percent": 0.99, "percent_type": "wo"},
+        {"element": "Zr", "percent": 0.01, "percent_type": "wo"}
+      ],
+      "plot_color": "dimgray"
+    },
+    "sodium": {
+      "name": "Sodium (heat pipe wick)",
+      "density_g_cm3": 0.78,
+      "components": [
+        {"element": "Na", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "plot_color": "gold"
+    },
+    "BeO": {
+      "name": "BeO",
+      "density_g_cm3": 2.85,
+      "components": [
+        {"element": "Be", "percent": 1.0, "percent_type": "ao"},
+        {"element": "O", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "s_alpha_beta": ["c_Be_in_BeO", "c_O_in_BeO"],
+      "_notes": "Check the TSL names against your cross-section library.",
+      "plot_color": "lightskyblue"
+    },
+    "B4C": {
+      "name": "B4C absorber",
+      "density_g_cm3": 2.40,
+      "components": [
+        {"element": "B", "percent": 4.0, "percent_type": "ao",
+         "enrichment": 90.0, "enrichment_target": "B10", "enrichment_type": "ao"},
+        {"element": "C", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "plot_color": "black"
+    },
+    "tungsten": {
+      "name": "Tungsten",
+      "density_g_cm3": 19.3,
+      "components": [
+        {"element": "W", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "plot_color": "navy"
+    },
+    "LiH": {
+      "name": "Li-7 hydride",
+      "density_g_cm3": 0.75,
+      "components": [
+        {"element": "Li", "percent": 1.0, "percent_type": "ao",
+         "enrichment": 0.5, "enrichment_target": "Li6", "enrichment_type": "ao"},
+        {"element": "H", "percent": 1.0, "percent_type": "ao"}
+      ],
+      "_notes": "Li-6 depleted to 0.5 at% to limit tritium production. No LiH thermal scattering data.",
+      "plot_color": "seagreen"
+    },
+    "YH2": {
+      "name": "Yttrium hydride (YH2)",
+      "density_g_cm3": 4.30,
+      "components": [
+        {"element": "Y", "percent": 1.0, "percent_type": "ao"},
+        {"element": "H", "percent": 2.0, "percent_type": "ao"}
+     ],
+      "s_alpha_beta": ["c_H_in_YH2", "c_Y_in_YH2"],
+      "plot_color": "mediumorchid"
+    }
+  },
+
+  "geometry": {
+    "fuel_pin": {
+      "fuel_material": "fuel_UN",
+      "clad_material": "clad_NbZr",
+      "r_fuel": 0.75,
+      "gap": 0.02,
+      "r_clad": 0.85,
+      "fuel_temperature_K": 1200.0,
+      "clad_temperature_K": 1150.0,
+      "_notes": "The fuel-clad gap and the pin interstitial are modeled as void."
+    },
+    "heat_pipe": {
+      "wall_material": "clad_NbZr",
+      "wick_material": "sodium",
+      "r_vapor": 0.65,
+      "r_wick": 0.75,
+      "r_outer": 0.85,
+      "temperature_K": 1150.0,
+      "_notes": "Vapor core is void. r_outer should match fuel_pin.r_clad."
+    },
+    "lattice": {
+      "pitch": 1.90,
+      "n_rings": 9,
+      "heat_pipe_every": 3,
+      "orientation": "y",
+      "filler_material": "BeO",
+      "filler_temperature_K": 900.0,
+      "interstitial_material": "YH2",
+      "interstitial_temperature_K": 900.0,
+      "_notes": "Every Nth slot in each ring is a heat pipe (placeholder pattern). Filler occupies the corners between the hexagon and the barrel. interstitial_material fills the space between pins: null = void, or a material key such as BeO (a moderating matrix block)."
+    },
+    "core": {
+      "active_length": 45.0,
+      "margin_to_barrel": 0.30,
+      "barrel_thickness": 0.30,
+      "barrel_material": "clad_NbZr",
+      "barrel_temperature_K": 1150.0
+    },
+    "reflector": {
+      "material": "BeO",
+      "temperature_K": 900.0,
+      "axial_thickness": 10.0,
+      "outboard_margin": 1.0
+    },
+    "control_drums": {
+      "count": 8,
+      "radius": 5.0,
+      "gap_to_barrel": 0.3,
+      "body_material": "BeO",
+      "body_temperature_K": 700.0,
+      "absorber_material": "B4C",
+      "absorber_temperature_K": 700.0,
+      "absorber_thickness": 1.0,
+      "absorber_half_angle_deg": 60.0,
+      "angle_deg": 180.0,
+      "_notes": "angle_deg 0 = absorber arc faces the core (shutdown); 180 = faces away (full out)."
+    },
+    "shield": {
+      "enabled": true,
+      "_notes": "Layers stack downward from the bottom axial reflector, first layer closest to the core. The last layer's outer face is the vacuum boundary.",
+      "layers": [
+        {"name": "W gamma shield", "material": "tungsten", "thickness": 3.0, "temperature_K": 500.0},
+        {"name": "LiH neutron shield", "material": "LiH", "thickness": 30.0, "temperature_K": 450.0}
+      ]
+    }
+  },
+
+  "settings": {
+    "run_mode": "eigenvalue",
+    "batches": 150,
+    "inactive": 60,
+    "particles": 10000,
+    "seed": null,
+    "temperature": {"method": "interpolation", "range": [294.0, 1500.0]},
+    "entropy_mesh_dimension": [8, 8, 8]
+  },
+
+  "tallies": {
+    "fission_xy_dimension": [60, 60, 1],
+    "fission_z_bins": 30,
+    "spectrum": {"energy_min_eV": 1.0, "energy_max_eV": 2.0e7, "groups": 100}
+  },
+
+  "run": {
+    "base_dir": "run_base",
+    "drum_sweep_deg": [0.0, 180.0]
+  },
+
+  "plot": {
+    "outdir": "plots",
+    "pixels": 360000
+  }
+}
