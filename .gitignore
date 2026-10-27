@@ -6,6 +6,10 @@ source.*.h5
 particle_*.h5
 track_*.h5
 volume_*.h5
+xy_core_zoom.png
+xy_midplane.png
+xz_section.png
+model.xml
 
 # Python / environment
 __pycache__/
