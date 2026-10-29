@@ -25,7 +25,7 @@ Units: cm, g/cm3, K.
 Known simplifications (see also the _notes in the JSON):
   * Gaps and pin interstitials are void; heat pipes stop at the core
   * Drums are BeO cylinders with a B4C arc (no sleeve, bearings, actuators)
-  * Temperatures are fixed inputs, not coupled to a thermal-hydraulics solution
+  * Temperatures are fixed inputs, not coupled to a thermal-hydraulics solution (Will change in future with T-H Calculations)
   * Shield is a flat disk stack, not a shadow cone sized to a dose limit
 """
 import argparse
@@ -37,6 +37,7 @@ from copy import deepcopy
 import numpy as np
 import openmc
 
+#Set the path to read the config.json file
 DEFAULT_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               "reactor_config.json")
 
@@ -433,9 +434,9 @@ def build_model(cfg):
 
 def build_kinf_model(cfg):
     """Core lattice only, reflective on every face: a no-leakage k estimate.
-    If this is below 1.0, no core SIZE can reach criticality -- change the
-    materials or fuel fraction instead. (The BeO corner filler between the
-    hexagon and the cylinder is included, so this is approximate.)"""
+        If k-inf is less than 1.0, no core size can reach criticality. Must 
+        adjust materials or fuel fraction instead.
+    """
     validate(cfg)
     g = cfg["geometry"]
     lib = MaterialLibrary(cfg["materials"])
@@ -471,7 +472,7 @@ def build_kinf_model(cfg):
 
 
 # --------------------------------------------------------------------------
-# 6. BOOKKEEPING FOR THE MASS TRADE STUDY
+# 6. BOOKKEEPING
 # --------------------------------------------------------------------------
 def print_summary(cfg, info):
     g = cfg["geometry"]
