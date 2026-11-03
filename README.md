@@ -11,6 +11,7 @@ hydraulics is handled separately and fed in as fixed temperatures.
 > leakage-limited, which is why moderator options are included. Update this
 > section as the team's results come in.
 
+I am learning how github pulls work and branch stuff works -Logan
 ---
 
 ## Contents
