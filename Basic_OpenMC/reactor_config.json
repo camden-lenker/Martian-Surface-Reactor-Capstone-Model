@@ -118,7 +118,7 @@
       "_notes": "Vapor core is void. r_outer should match fuel_pin.r_clad."
     },
     "lattice": {
-      "pitch": 1.90,
+      "pitch": 2.5,
       "n_rings": 9,
       "heat_pipe_every": 3,
       "orientation": "y",

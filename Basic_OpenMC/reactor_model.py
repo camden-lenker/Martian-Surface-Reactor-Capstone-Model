@@ -550,8 +550,13 @@ def plot_geometry(cfg, model, info):
                            width=(2.1 * R, 1.05 * z_span)),
     }
     for name, view in views.items():
-        root.plot(pixels=cfg["plot"]["pixels"], color_by="material",
-                  colors=colors, **view)
+        ax = root.plot(pixels=cfg["plot"]["pixels"], color_by="material",
+                       colors=colors, legend=True,
+                       legend_kwargs={"loc": "upper left",
+                                      "bbox_to_anchor": (1.02, 1),
+                                      "fontsize": 9,
+                                      "title": "Materials"},
+                       **view)
         plt.savefig(os.path.join(outdir, f"{name}.png"), dpi=150,
                     bbox_inches="tight")
         plt.close("all")
