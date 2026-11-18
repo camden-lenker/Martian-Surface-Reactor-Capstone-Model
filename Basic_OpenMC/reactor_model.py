@@ -36,6 +36,7 @@ from copy import deepcopy
 
 import numpy as np
 import openmc
+import openmc.deplete
 
 #Set the path to read the config.json file
 DEFAULT_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -470,6 +471,27 @@ def build_kinf_model(cfg):
         settings=st)
     return model
 
+def run_depletion(cfg):
+    dep = cfg["depletion"]
+    model, info = build_model(cfg)
+    model.tallies = openmc.Tallies()       # the user tallies aren't needed here
+    info["fuel_mat"].depletable = True     # volume is already set in build_model
+
+    chain = dep.get("chain_file") or os.environ.get("OPENMC_CHAIN_FILE")
+    if not chain:
+        raise RuntimeError("No depletion chain: set depletion.chain_file or "
+                           "OPENMC_CHAIN_FILE")
+
+    model.deplete(timesteps=dep["timesteps"], method=dep["method"],
+                  power=dep["thermal_power_W"],
+                  timestep_units=dep["timestep_units"],
+                  operator_kwargs={"chain_file": chain},
+                  directory=dep["output_dir"])
+
+    res = openmc.deplete.Results(os.path.join(dep["output_dir"],
+                                              "depletion_results.h5"))
+    return res, info
+
 
 # --------------------------------------------------------------------------
 # 6. BOOKKEEPING
@@ -577,8 +599,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--config", default=DEFAULT_CONFIG)
-    ap.add_argument("--mode", choices=["plot", "run", "sweep", "kinf"],
-                    default="plot")
+    ap.add_argument("--mode", choices=["plot", "run", "sweep", "kinf", "deplete"],
+                    default="run")
     ap.add_argument("--set", action="append", dest="overrides",
                     metavar="PATH=VALUE",
                     help="override a config value, e.g. geometry.lattice.pitch=2.0")
@@ -601,6 +623,12 @@ def main():
         sp_path = model.run(cwd="run_kinf")
         with openmc.StatePoint(sp_path) as sp:
             print(f"k-inf (approx, fully reflected core) = {sp.keff}")
+
+    elif args.mode == "deplete":
+        res, info = run_depletion(cfg)
+        t, k = res.get_keff(time_units="d")
+        for ti, ki in zip(t, k):
+            print(f"t = {ti:8.1f} d   k-eff = {ki[0]:.5f} +/- {ki[1]:.5f}")
 
     elif args.mode == "sweep":
         results = {}
