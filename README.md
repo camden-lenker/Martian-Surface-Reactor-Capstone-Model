@@ -183,6 +183,7 @@ conda activate openmc-env
 python reactor_model.py --mode plot     # geometry check (start here)
 python reactor_model.py --mode kinf     # no-leakage diagnostic
 python reactor_model.py --mode run      # k-eigenvalue run
+python reactor_model.py --mode deplete    # depletion run
 python reactor_model.py --mode sweep    # control drum worth
 ```
 
@@ -192,6 +193,7 @@ python reactor_model.py --mode sweep    # control drum worth
 | `kinf` | Runs the core lattice with reflective boundaries on all faces. A k-infinity below 1.0 means no core size can reach criticality with these materials. Slightly approximate (includes the BeO corner filler). |
 | `run` | Full model k-eigenvalue calculation. Prints the mass summary and k-eff with its uncertainty. |
 | `sweep` | Runs the angles listed in `run.drum_sweep_deg` (default 0 and 180 degrees) and reports the total drum worth in pcm. |
+| `deplete` | Runs a depletion task based on the depletion settings in the JSON. Requires the download of depletiion chains from OpenMC website 
 
 ### Quick test run
 
