@@ -188,5 +188,15 @@
   "plot": {
     "outdir": "plots",
     "pixels": 360000
-  }
+  },
+
+  "depletion": {
+  "_notes": "thermal_power_W is the reactor thermal power, not the 40 kWe output. Use the power-conversion team's efficiency.",
+  "chain_file": null,
+  "thermal_power_W": 160000,
+  "timestep_units": "d",
+  "timesteps": [1, 4, 15, 30, 60, 90, 180, 365, 365, 365],
+  "method": "cecm",
+  "output_dir": "run_depletion"
+}
 }

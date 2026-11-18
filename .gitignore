@@ -10,6 +10,11 @@ xy_core_zoom.png
 xy_midplane.png
 xz_section.png
 model.xml
+openmc_simulation_*.h5
+materials.xml
+geometry.xml
+depletion_results.h5
+settings.xml
 
 # Python / environment
 __pycache__/
